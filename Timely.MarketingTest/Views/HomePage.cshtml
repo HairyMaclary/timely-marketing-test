@@ -1,4 +1,5 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models.Blocks;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 @{
 	Layout = null;
@@ -25,3 +26,159 @@ else
 {
 	<p>No tags.</p>
 }
+
+<div class="pokemon-section">
+	<h3>Pokemon</h3>
+	
+	@* Display success/error messages *@
+	@if (TempData["Success"] != null)
+	{
+		<div class="alert alert-success">@TempData["Success"]</div>
+	}
+	@if (TempData["Error"] != null)
+	{
+		<div class="alert alert-danger">@TempData["Error"]</div>
+	}
+	
+	@* Umbraco Surface Controller Forms *@
+	@using (Html.BeginUmbracoForm("LoadPokemon", "PokemonSurface"))
+	{
+		<button type="submit" class="btn btn-primary">Load 5 Pokemon</button>
+	}
+	
+	@using (Html.BeginUmbracoForm("ClearPokemon", "PokemonSurface"))
+	{
+		<button type="submit" class="btn btn-danger">Clear Pokemon</button>
+	}
+	
+	@* Display Pokemon Block List if it exists *@
+	@{
+		var pokemonBlockList = Model.Value<BlockListModel>("pokemonList");
+	}
+	
+	@if (pokemonBlockList != null && pokemonBlockList.Any())
+	{
+		<div class="pokemon-grid">
+			@foreach (var block in pokemonBlockList)
+			{
+				@Html.Partial("~/Views/Partials/blocklist/Components/pokemon.cshtml", block)
+			}
+		</div>
+	}
+	else
+	{
+		<p>No Pokemon loaded yet. Click the button above to load Pokemon from the API.</p>
+	}
+</div>
+
+<!-- Content Count Section -->
+<div class="content-count-section">
+	<h3>Pokemon Count</h3>
+	
+	@{
+		var contentCount = Model.Value<int>("contentCount");
+	}
+	
+	@if (contentCount > 0)
+	{
+		<div class="content-count-display">
+			<p><strong>Number of Pokemon: @contentCount</strong></p>
+		</div>
+	}
+	else
+	{
+		<p>No Pokemon count available. Click the button below to count current Pokemon.</p>
+	}
+	
+	@using (Html.BeginUmbracoForm("GetContentCount", "PokemonSurface"))
+	{
+		<button type="submit" class="btn btn-secondary">Submit Pokemon Count</button>
+	}
+</div>
+
+<style>
+	.pokemon-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 20px;
+		margin-top: 20px;
+	}
+	
+	.pokemon-card {
+		border: 1px solid #ccc;
+		padding: 15px;
+		border-radius: 8px;
+		background-color: #f9f9f9;
+		margin-bottom: 15px;
+	}
+	
+	.pokemon-card h4 {
+		margin-top: 0;
+		text-transform: capitalize;
+		color: #333;
+	}
+	
+	.pokemon-section, .content-count-section {
+		margin-top: 30px;
+	}
+	
+	.content-count-display {
+		background-color: #e7f3ff;
+		border: 1px solid #b3d9ff;
+		padding: 15px;
+		border-radius: 4px;
+		margin: 10px 0;
+	}
+	
+	.content-count-display p {
+		margin: 0;
+		font-size: 16px;
+		color: #0066cc;
+	}
+	
+	.btn {
+		background-color: #4CAF50;
+		color: white;
+		padding: 10px 20px;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		margin: 10px 0;
+	}
+	
+	.btn-secondary {
+		background-color: #6c757d;
+	}
+	
+	.btn-danger {
+		background-color: #dc3545;
+	}
+	
+	.btn:hover {
+		opacity: 0.8;
+	}
+	
+	.alert {
+		padding: 15px;
+		margin: 10px 0;
+		border-radius: 4px;
+	}
+	
+	.alert-success {
+		background-color: #d4edda;
+		color: #155724;
+		border: 1px solid #c3e6cb;
+	}
+	
+	.alert-danger {
+		background-color: #f8d7da;
+		color: #721c24;
+		border: 1px solid #f5c6cb;
+	}
+	
+	.alert-info {
+		background-color: #d1ecf1;
+		color: #0c5460;
+		border: 1px solid #bee5eb;
+	}
+</style>

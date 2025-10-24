@@ -1,0 +1,32 @@
+@using Umbraco.Cms.Core.Models.Blocks
+@model BlockListItem
+
+@{
+    var name = Model.Content.Value<string>("pokemonName") ?? "Unknown Pokemon";
+    var height = Model.Content.Value<decimal>("pokemonHeight");
+    var weight = Model.Content.Value<decimal>("pokemonWeight");
+    var species = Model.Content.Value<string>("pokemonSpecies") ?? "Unknown Species";
+}
+
+<div class="pokemon-card">
+    <h4>@name</h4>
+    <p><strong>Height:</strong> @height m</p>
+    <p><strong>Weight:</strong> @weight kg</p>
+    <p><strong>Species:</strong> @species</p>
+</div>
+
+<style>
+    .pokemon-card {
+        border: 1px solid #ccc;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        margin-bottom: 15px;
+    }
+    
+    .pokemon-card h4 {
+        margin-top: 0;
+        text-transform: capitalize;
+        color: #333;
+    }
+</style>
