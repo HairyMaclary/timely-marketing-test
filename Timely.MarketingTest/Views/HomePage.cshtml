@@ -25,3 +25,91 @@ else
 {
 	<p>No tags.</p>
 }
+
+<div class="pokemon-section">
+	<h3>Pokemon</h3>
+	<button id="loadPokemon" onclick="loadPokemon()">Load 5 Pokemon</button>
+	<div id="pokemonContainer"></div>
+</div>
+
+<script>
+	async function loadPokemon() {
+		const button = document.getElementById('loadPokemon');
+		const container = document.getElementById('pokemonContainer');
+		
+		button.disabled = true;
+		button.textContent = 'Loading...';
+		container.innerHTML = '';
+		
+		try {
+			const response = await fetch('/api/pokemon?count=5');
+			const pokemon = await response.json();
+			
+			// I'm just creatng these in HTML for now.
+			// It messses up the local database if I try and add these
+			// to the backoffice.
+			if (pokemon.length > 0) {
+				let html = '<div class="pokemon-grid">';
+				pokemon.forEach(p => {
+					html += `
+						<div class="pokemon-card">
+							<h4>${p.name}</h4>
+							<p><strong>Height:</strong> ${p.height}m</p>
+							<p><strong>Weight:</strong> ${p.weight}kg</p>
+							<p><strong>Species:</strong> ${p.species}</p>
+						</div>
+					`;
+				});
+				html += '</div>';
+				container.innerHTML = html;
+			} else {
+				container.innerHTML = '<p>No Pokemon found.</p>';
+			}
+		} catch (error) {
+			container.innerHTML = '<p>Error loading Pokemon: ' + error.message + '</p>';
+		}
+		
+		button.disabled = false;
+		button.textContent = 'Load 5 Pokemon';
+	}
+</script>
+
+<style>
+	.pokemon-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 20px;
+		margin-top: 20px;
+	}
+	
+	.pokemon-card {
+		border: 1px solid #ccc;
+		padding: 15px;
+		border-radius: 8px;
+		background-color: #f9f9f9;
+	}
+	
+	.pokemon-card h4 {
+		margin-top: 0;
+		text-transform: capitalize;
+		color: #333;
+	}
+	
+	.pokemon-section {
+		margin-top: 30px;
+	}
+	
+	#loadPokemon {
+		background-color: #4CAF50;
+		color: white;
+		padding: 10px 20px;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+	
+	#loadPokemon:disabled {
+		background-color: #cccccc;
+		cursor: not-allowed;
+	}
+</style>

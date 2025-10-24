@@ -1,4 +1,8 @@
+using Timely.MarketingTest.Services;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient<PokemonService>();
 
 builder.CreateUmbracoBuilder()
     .AddBackOffice()
