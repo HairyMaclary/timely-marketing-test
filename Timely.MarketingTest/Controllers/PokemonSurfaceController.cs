@@ -110,6 +110,48 @@ namespace Timely.MarketingTest.Controllers
         }
 
         [HttpPost]
+        public IActionResult ClearPokemon()
+        {
+            try
+            {
+                var currentPage = CurrentPage;
+                if (currentPage == null)
+                {
+                    TempData["Error"] = "Could not find current page";
+                    return CurrentUmbracoPage();
+                }
+
+                var homepageContent = _contentService.GetById(currentPage.Id);
+                if (homepageContent != null)
+                {
+                    // Clear the Pokemon Block List by setting it to empty
+                    var emptyBlockListJson = JsonConvert.SerializeObject(new
+                    {
+                        layout = new Dictionary<string, object>
+                        {
+                            ["Umbraco.BlockList"] = new object[0]
+                        },
+                        contentData = new object[0],
+                        settingsData = new object[0]
+                    });
+                    
+                    homepageContent.SetValue("pokemonList", emptyBlockListJson);
+                    
+                    _contentService.Save(homepageContent);
+                    _contentService.Publish(homepageContent, new string[0]);
+                }
+
+                TempData["Success"] = "Pokemon cleared successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error clearing Pokemon: {ex.Message}";
+            }
+
+            return CurrentUmbracoPage();
+        }
+
+        [HttpPost]
         public IActionResult GetContentCount()
         {
             try

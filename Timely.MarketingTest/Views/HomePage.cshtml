@@ -30,10 +30,15 @@ else
 <div class="pokemon-section">
 	<h3>Pokemon</h3>
 	
-	@* Umbraco Surface Controller Form *@
+	@* Umbraco Surface Controller Forms *@
 	@using (Html.BeginUmbracoForm("LoadPokemon", "PokemonSurface"))
 	{
 		<button type="submit" class="btn btn-primary">Load 5 Pokemon</button>
+	}
+	
+	@using (Html.BeginUmbracoForm("ClearPokemon", "PokemonSurface"))
+	{
+		<button type="submit" class="btn btn-danger">Clear Pokemon</button>
 	}
 	
 	@* Display Pokemon Block List if it exists *@
@@ -111,6 +116,10 @@ else
 	
 	.btn-secondary {
 		background-color: #6c757d;
+	}
+	
+	.btn-danger {
+		background-color: #dc3545;
 	}
 	
 	.btn:hover {
