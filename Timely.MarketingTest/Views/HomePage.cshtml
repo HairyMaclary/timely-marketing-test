@@ -1,0 +1,27 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+	Layout = null;
+}
+<h1>Home Page</h1>
+
+@{
+	var tags = Model.Value<IEnumerable<string>>("tags");
+}
+
+@if (tags != null && tags.Any())
+{
+	<div class="page-tags">
+		<h3>Page Tags:</h3>
+		<ul>
+			@foreach (var tag in tags)
+			{
+				<li>@tag</li>
+			}
+		</ul>
+	</div>
+}
+else
+{
+	<p>No tags assigned to this page.</p>
+}
