@@ -12,6 +12,17 @@ using Newtonsoft.Json;
 
 namespace Timely.MarketingTest.Controllers
 {
+    /// <summary>
+    /// Surface Controller for handling Pokemon-related operations and content counting.
+    /// This controller demonstrates Umbraco's native patterns using SurfaceController,
+    /// ContentService, and Block List management for the technical assessment.
+    /// 
+    /// Key features:
+    /// - Loads Pokemon from external API and stores as Block List content in database
+    /// - Clears Pokemon data from Block List and resets counters
+    /// - Counts Pokemon items in Block List and stores result in contentCount property
+    /// - Uses proper Umbraco form submission patterns with automatic page refresh
+    /// </summary>
     public class PokemonSurfaceController : SurfaceController
     {
         private readonly PokemonService _pokemonService;
