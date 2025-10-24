@@ -137,6 +137,8 @@ namespace Timely.MarketingTest.Controllers
                     
                     homepageContent.SetValue("pokemonList", emptyBlockListJson);
                     
+                    homepageContent.SetValue("contentCount", 0);
+                    
                     _contentService.Save(homepageContent);
                     _contentService.Publish(homepageContent, new string[0]);
                 }
@@ -156,14 +158,48 @@ namespace Timely.MarketingTest.Controllers
         {
             try
             {
-                var allContent = _contentService.GetPagedDescendants(-1, 0, int.MaxValue, out var total);
-                var publishedCount = allContent.Count(c => c.Published);
+                var currentPage = CurrentPage;
+                if (currentPage == null)
+                {
+                    TempData["Error"] = "Could not find current page";
+                    return CurrentUmbracoPage();
+                }
 
-                TempData["ContentCount"] = publishedCount;
+                // Count Pokemon in the Block List
+                var homepageContent = _contentService.GetById(currentPage.Id);
+                int pokemonCount = 0;
+                
+                if (homepageContent != null)
+                {
+                    // Get the Pokemon Block List and count the items
+                    var pokemonBlockListJson = homepageContent.GetValue<string>("pokemonList");
+                    
+                    if (!string.IsNullOrEmpty(pokemonBlockListJson))
+                    {
+                        try
+                        {
+                            var blockListData = JsonConvert.DeserializeObject<dynamic>(pokemonBlockListJson);
+                            if (blockListData?.contentData != null)
+                            {
+                                pokemonCount = ((Newtonsoft.Json.Linq.JArray)blockListData.contentData).Count;
+                            }
+                        }
+                        catch
+                        {
+                            // If JSON parsing fails, pokemonCount stays 0
+                        }
+                    }
+
+                    homepageContent.SetValue("contentCount", pokemonCount);
+                    _contentService.Save(homepageContent);
+                    _contentService.Publish(homepageContent, new string[0]);
+                }
+
+                TempData["ContentCount"] = pokemonCount;
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Error getting content count: {ex.Message}";
+                TempData["Error"] = $"Error getting Pokemon count: {ex.Message}";
             }
 
             return CurrentUmbracoPage();

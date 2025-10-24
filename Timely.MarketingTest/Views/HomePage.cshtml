@@ -30,6 +30,16 @@ else
 <div class="pokemon-section">
 	<h3>Pokemon</h3>
 	
+	@* Display success/error messages *@
+	@if (TempData["Success"] != null)
+	{
+		<div class="alert alert-success">@TempData["Success"]</div>
+	}
+	@if (TempData["Error"] != null)
+	{
+		<div class="alert alert-danger">@TempData["Error"]</div>
+	}
+	
 	@* Umbraco Surface Controller Forms *@
 	@using (Html.BeginUmbracoForm("LoadPokemon", "PokemonSurface"))
 	{
@@ -61,20 +71,28 @@ else
 	}
 </div>
 
-<!-- Content Count Form using Umbraco SurfaceController -->
+<!-- Content Count Section -->
 <div class="content-count-section">
-	<h3>Content Count</h3>
+	<h3>Pokemon Count</h3>
 	
-	@if (TempData["ContentCount"] != null)
+	@{
+		var contentCount = Model.Value<int>("contentCount");
+	}
+	
+	@if (contentCount > 0)
 	{
-		<div class="alert alert-info">
-			<strong>Total published content items: @TempData["ContentCount"]</strong>
+		<div class="content-count-display">
+			<p><strong>Number of Pokemon: @contentCount</strong></p>
 		</div>
+	}
+	else
+	{
+		<p>No Pokemon count available. Click the button below to count current Pokemon.</p>
 	}
 	
 	@using (Html.BeginUmbracoForm("GetContentCount", "PokemonSurface"))
 	{
-		<button type="submit" class="btn btn-secondary">Get Published Content Count</button>
+		<button type="submit" class="btn btn-secondary">Submit Pokemon Count</button>
 	}
 </div>
 
@@ -102,6 +120,20 @@ else
 	
 	.pokemon-section, .content-count-section {
 		margin-top: 30px;
+	}
+	
+	.content-count-display {
+		background-color: #e7f3ff;
+		border: 1px solid #b3d9ff;
+		padding: 15px;
+		border-radius: 4px;
+		margin: 10px 0;
+	}
+	
+	.content-count-display p {
+		margin: 0;
+		font-size: 16px;
+		color: #0066cc;
 	}
 	
 	.btn {
