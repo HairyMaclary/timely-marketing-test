@@ -1,4 +1,5 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models.Blocks;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 @{
 	Layout = null;
@@ -28,51 +29,49 @@ else
 
 <div class="pokemon-section">
 	<h3>Pokemon</h3>
-	<button id="loadPokemon" onclick="loadPokemon()">Load 5 Pokemon</button>
-	<div id="pokemonContainer"></div>
+	
+	@* Umbraco Surface Controller Form *@
+	@using (Html.BeginUmbracoForm("LoadPokemon", "PokemonSurface"))
+	{
+		<button type="submit" class="btn btn-primary">Load 5 Pokemon</button>
+	}
+	
+	@* Display Pokemon Block List if it exists *@
+	@{
+		var pokemonBlockList = Model.Value<BlockListModel>("pokemonList");
+	}
+	
+	@if (pokemonBlockList != null && pokemonBlockList.Any())
+	{
+		<div class="pokemon-grid">
+			@foreach (var block in pokemonBlockList)
+			{
+				@Html.Partial("~/Views/Partials/blocklist/Components/pokemon.cshtml", block)
+			}
+		</div>
+	}
+	else
+	{
+		<p>No Pokemon loaded yet. Click the button above to load Pokemon from the API.</p>
+	}
 </div>
 
-<script>
-	async function loadPokemon() {
-		const button = document.getElementById('loadPokemon');
-		const container = document.getElementById('pokemonContainer');
-		
-		button.disabled = true;
-		button.textContent = 'Loading...';
-		container.innerHTML = '';
-		
-		try {
-			const response = await fetch('/api/pokemon?count=5');
-			const pokemon = await response.json();
-			
-			// I'm just creatng these in HTML for now.
-			// It messses up the local database if I try and add these
-			// to the backoffice.
-			if (pokemon.length > 0) {
-				let html = '<div class="pokemon-grid">';
-				pokemon.forEach(p => {
-					html += `
-						<div class="pokemon-card">
-							<h4>${p.name}</h4>
-							<p><strong>Height:</strong> ${p.height}m</p>
-							<p><strong>Weight:</strong> ${p.weight}kg</p>
-							<p><strong>Species:</strong> ${p.species}</p>
-						</div>
-					`;
-				});
-				html += '</div>';
-				container.innerHTML = html;
-			} else {
-				container.innerHTML = '<p>No Pokemon found.</p>';
-			}
-		} catch (error) {
-			container.innerHTML = '<p>Error loading Pokemon: ' + error.message + '</p>';
-		}
-		
-		button.disabled = false;
-		button.textContent = 'Load 5 Pokemon';
+<!-- Content Count Form using Umbraco SurfaceController -->
+<div class="content-count-section">
+	<h3>Content Count</h3>
+	
+	@if (TempData["ContentCount"] != null)
+	{
+		<div class="alert alert-info">
+			<strong>Total published content items: @TempData["ContentCount"]</strong>
+		</div>
 	}
-</script>
+	
+	@using (Html.BeginUmbracoForm("GetContentCount", "PokemonSurface"))
+	{
+		<button type="submit" class="btn btn-secondary">Get Published Content Count</button>
+	}
+</div>
 
 <style>
 	.pokemon-grid {
@@ -87,6 +86,7 @@ else
 		padding: 15px;
 		border-radius: 8px;
 		background-color: #f9f9f9;
+		margin-bottom: 15px;
 	}
 	
 	.pokemon-card h4 {
@@ -95,21 +95,49 @@ else
 		color: #333;
 	}
 	
-	.pokemon-section {
+	.pokemon-section, .content-count-section {
 		margin-top: 30px;
 	}
 	
-	#loadPokemon {
+	.btn {
 		background-color: #4CAF50;
 		color: white;
 		padding: 10px 20px;
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;
+		margin: 10px 0;
 	}
 	
-	#loadPokemon:disabled {
-		background-color: #cccccc;
-		cursor: not-allowed;
+	.btn-secondary {
+		background-color: #6c757d;
+	}
+	
+	.btn:hover {
+		opacity: 0.8;
+	}
+	
+	.alert {
+		padding: 15px;
+		margin: 10px 0;
+		border-radius: 4px;
+	}
+	
+	.alert-success {
+		background-color: #d4edda;
+		color: #155724;
+		border: 1px solid #c3e6cb;
+	}
+	
+	.alert-danger {
+		background-color: #f8d7da;
+		color: #721c24;
+		border: 1px solid #f5c6cb;
+	}
+	
+	.alert-info {
+		background-color: #d1ecf1;
+		color: #0c5460;
+		border: 1px solid #bee5eb;
 	}
 </style>
